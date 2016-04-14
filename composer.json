@@ -18,5 +18,6 @@
     "psr-4": {
       "Expresser\\Support\\": ""
     }
-  }
+  },
+  "minimum-stability": "dev"
 }
