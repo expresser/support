@@ -7,5 +7,8 @@ class Facade extends \Themosis\Facades\Facade {
 		static::$app->register(static::getIgniterClass());
 	}
 
-  // TODO: register igniters from config
+  protected static function getIgniterClass() {
+
+    throw new \RuntimeException('Facade does not implement getIgniterClass method.');
+  }
 }

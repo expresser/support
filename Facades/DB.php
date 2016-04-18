@@ -6,4 +6,9 @@ class DB extends Facade {
 
     return 'db';
   }
+
+  protected static function getIgniterClass() {
+
+    return '\Expresser\Database\DatabaseIgniterService';
+  }
 }

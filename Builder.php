@@ -1,5 +1,7 @@
 <?php namespace Expresser\Support;
 
+use Illuminate\Support\Collection;
+
 abstract class Builder {
 
   protected $model;
