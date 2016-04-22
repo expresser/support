@@ -28,5 +28,15 @@ abstract class Builder {
 		return $this;
 	}
 
+  public function __call($method, $parameters) {
+
+    if (strpos($method, 'where') === 0) {
+
+      $method = lcfirst(str_replace('where', '', $method));
+
+      return call_user_func_array(array($this, $method), $parameters);
+    }
+  }
+
   public abstract function get();
 }
