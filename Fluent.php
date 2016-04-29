@@ -6,6 +6,8 @@ abstract class Fluent {
 
   protected $attributes = [];
 
+  protected $fieldPrefix = '';
+
   public function __construct($attributes = []) {
 
     if (!is_array($attributes)) $attributes = (array)$attributes;
@@ -28,11 +30,6 @@ abstract class Fluent {
     return $this->getAttributeValue($key);
   }
 
-  public function getAttributeFromArray($key) {
-
-    if (array_key_exists($key, $this->attributes)) return $this->attributes[$key];
-  }
-
   public function getAttributeValue($key) {
 
     $value = $this->getAttributeFromArray($key);
@@ -47,6 +44,24 @@ abstract class Fluent {
     if ($this->hasGetMutator($key)) return $this->{'get' . studly_case($key) . 'Attribute'}($value);
 
     return $value;
+  }
+
+  public function getAttributeFromArray($key) {
+
+    if (array_key_exists($key, $this->attributes)) {
+
+      return $this->attributes[$key];
+    }
+
+    if (array_key_exists($this->getFieldPrefix() . $key, $this->attributes)) {
+
+      return $this->attributes[$this->getFieldPrefix() . $key];
+    }
+  }
+
+  public function getFieldPrefix() {
+
+    return $this->fieldPrefix;
   }
 
   public function hasGetMutator($key) {
