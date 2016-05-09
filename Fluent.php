@@ -139,16 +139,16 @@ abstract class Fluent {
     static::registerClassHooks($class);
   }
 
+  public static function registerHooks($class) {
+
+    // Override to register actions and filters
+  }
+
   public static function __callStatic($method, $parameters) {
 
     $instance = new static;
 
     return call_user_func_array(array($instance, $method), $parameters);
-  }
-
-  protected static function registerHooks($class) {
-
-    // Override to register actions and filters
   }
 
   private static function registerClassHooks($class) {
