@@ -136,6 +136,7 @@ abstract class Fluent {
 
     $class = get_called_class();
 
+    static::registerHooks($class);
     static::registerClassHooks($class);
   }
 
@@ -152,8 +153,6 @@ abstract class Fluent {
   }
 
   private static function registerClassHooks($class) {
-
-    static::registerHooks($class);
 
     $method = explode('\\', $class);
     $method = end($method);
