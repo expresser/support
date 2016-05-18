@@ -160,7 +160,7 @@ abstract class Fluent {
 
     if (method_exists($class, $method) && is_callable([$class, $method])) {
 
-      forward_static_call([$class, $method], [$class]);
+      forward_static_call([$class, $method], $class);
     }
   }
 }
