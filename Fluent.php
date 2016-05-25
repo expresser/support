@@ -157,12 +157,12 @@ abstract class Fluent {
 
   public static function doRefreshRewriteTags(array $args = []) {
 
-    do_action_ref_array('exp/refreshRewriteTags', $args);
+    static::doAction('refreshRewriteTags', $args);
   }
 
   public static function doRefreshRewriteRules(array $args = []) {
 
-    do_action_ref_array('exp/refreshRewriteRules', $args);
+    static::doAction('refreshRewriteRules', $args);
   }
 
   public static function flushRewriteRules() {
@@ -192,6 +192,26 @@ abstract class Fluent {
     if (method_exists($class, $method) && is_callable([$class, $method])) {
 
       forward_static_call([$class, $method], $class);
+    }
+  }
+
+  protected static function doAction($action, array $args = []) {
+
+    static::doHook('do_action', $action, $args);
+  }
+
+  protected static function doFilter($filter, array $args = []) {
+
+    return static::doHook('apply_filters', $filter, $args);
+  }
+
+  protected static function doHook($function, $hook, array $args = []) {
+
+    if (function_exists($function)) {
+
+      array_unshift($args, implode('/', ['exp', $hook]));
+
+      return call_user_func_array($function, $args);
     }
   }
 }
