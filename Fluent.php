@@ -127,6 +127,26 @@ abstract class Fluent {
     return !is_null($this->getAttribute($this->transformKey($key)));
   }
 
+  public static function doRefreshRewrites() {
+
+    $args = func_get_args();
+
+    call_user_func_array('static::doRefreshRewriteTags', $args);
+    call_user_func_array('static::doRefreshRewriteRules', $args);
+
+    flush_rewrite_rules();
+  }
+
+  public static function doRefreshRewriteTags() {
+
+    static::doAction('refreshRewriteTags', func_get_args());
+  }
+
+  public static function doRefreshRewriteRules() {
+
+    static::doAction('refreshRewriteRules', func_get_args());
+  }
+
   public static function make($attributes = []) {
 
     return new static($attributes);
@@ -146,53 +166,11 @@ abstract class Fluent {
     // Override to register actions and filters
   }
 
-  public static function refreshRewriteRules() {
-
-    $args = func_get_args();
-
-    static::doRefreshRewriteTags($args);
-    static::doRefreshRewriteRules($args);
-    static::flushRewriteRules();
-  }
-
-  public static function doRefreshRewriteTags(array $args = []) {
-
-    static::doAction('refreshRewriteTags', $args);
-  }
-
-  public static function doRefreshRewriteRules(array $args = []) {
-
-    static::doAction('refreshRewriteRules', $args);
-  }
-
-  public static function flushRewriteRules() {
-
-    flush_rewrite_rules();
-  }
-
   public static function __callStatic($method, $parameters) {
 
     $instance = new static;
 
     return call_user_func_array(array($instance, $method), $parameters);
-  }
-
-  protected static function registerBaseHooks($class) {
-
-    add_action('after_switch_theme', [__CLASS__, 'refreshRewriteRules'], PHP_INT_MAX, 0);
-    add_action('switch_theme', [__CLASS__, 'flushRewriteRules'], PHP_INT_MAX, 0);
-  }
-
-  protected static function registerClassHooks($class) {
-
-    $method = explode('\\', $class);
-    $method = end($method);
-    $method = 'register' . $method . 'Hooks';
-
-    if (method_exists($class, $method) && is_callable([$class, $method])) {
-
-      forward_static_call([$class, $method], $class);
-    }
   }
 
   protected static function doAction($action, array $args = []) {
@@ -207,11 +185,29 @@ abstract class Fluent {
 
   protected static function doHook($function, $hook, array $args = []) {
 
-    if (function_exists($function)) {
+    if (function_exists($function) && has_filter($hook = implode('/', ['exp', $hook]))) {
 
-      array_unshift($args, implode('/', ['exp', $hook]));
+      array_unshift($args, $hook);
 
       return call_user_func_array($function, $args);
+    }
+  }
+
+  protected static function registerBaseHooks($class) {
+
+    add_action('after_switch_theme', [__CLASS__, 'doRefreshRewrites'], PHP_INT_MAX, 0);
+    add_action('switch_theme', 'flush_rewrite_rules', PHP_INT_MAX, 0);
+  }
+
+  protected static function registerClassHooks($class) {
+
+    $method = explode('\\', $class);
+    $method = end($method);
+    $method = 'register' . $method . 'Hooks';
+
+    if (method_exists($class, $method) && is_callable([$class, $method])) {
+
+      forward_static_call([$class, $method], $class);
     }
   }
 }
