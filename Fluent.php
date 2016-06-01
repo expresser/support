@@ -191,6 +191,8 @@ abstract class Fluent {
 
       return call_user_func_array($function, $args);
     }
+
+    return array_shift($args);
   }
 
   protected static function registerBaseHooks($class) {
