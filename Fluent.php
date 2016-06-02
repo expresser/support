@@ -1,8 +1,12 @@
 <?php namespace Expresser\Support;
 
-use Arrayable;
+use ArrayAccess;
+use JsonSerializable;
 
-abstract class Fluent {
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Contracts\Support\Jsonable;
+
+abstract class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializable {
 
   protected $attributes = [];
 
@@ -27,7 +31,7 @@ abstract class Fluent {
 
   public function getAttribute($key) {
 
-    return $this->getAttributeValue($key);
+    return $this->getAttributeValue($this->transformKey($key));
   }
 
   public function getAttributeValue($key) {
@@ -76,6 +80,8 @@ abstract class Fluent {
 
   public function setAttribute($key, $value) {
 
+    $key = $this->transformKey($key);
+
     if ($this->hasSetMutator($key)) {
 
       $this->{'set' . studly_case($key) . 'Attribute'}($value);
@@ -84,6 +90,11 @@ abstract class Fluent {
 
       $this->attributes[$key] = $value;
     }
+  }
+
+  public function transformKey($key) {
+
+    return $key;
   }
 
   public function toArray() {
@@ -100,10 +111,30 @@ abstract class Fluent {
     return json_encode($this->toArray(), $options);
   }
 
-  public function transformKey($key) {
+  public function jsonSerialize() {
 
-    return $key;
-  }
+		return $this->toArray();
+	}
+
+  public function offsetExists($offset) {
+
+		return isset($this->$offset);
+	}
+
+	public function offsetGet($offset) {
+
+		return $this->$offset;
+	}
+
+	public function offsetSet($offset, $value) {
+
+		$this->$offset = $value;
+	}
+
+	public function offsetUnset($offset) {
+
+		unset($this->$offset);
+	}
 
   public function __call($method, $parameters) {
 
@@ -114,17 +145,17 @@ abstract class Fluent {
 
   public function __get($key) {
 
-    return $this->getAttribute($this->transformKey($key));
+    return $this->getAttribute($key);
   }
 
   public function __set($key, $value) {
 
-    $this->setAttribute($this->transformKey($key), $value);
+    $this->setAttribute($key, $value);
   }
 
   public function __isset($key) {
 
-    return !is_null($this->getAttribute($this->transformKey($key)));
+    return !is_null($this->getAttribute($key));
   }
 
   public static function doRefreshRewrites() {
