@@ -6,7 +6,7 @@ abstract class Model extends Fluent {
 
   protected $original = [];
 
-  public function __construct($attributes = []) {
+  public function __construct(array $attributes = []) {
 
     parent::__construct($attributes);
 

@@ -12,9 +12,7 @@ abstract class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializa
 
   protected $fieldPrefix = '';
 
-  public function __construct($attributes = []) {
-
-    if (!is_array($attributes)) $attributes = (array)$attributes;
+  public function __construct(array $attributes = []) {
 
     $this->fill($attributes);
   }
