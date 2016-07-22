@@ -53,7 +53,7 @@ abstract class Model extends Fluent {
 
     $query = $this->newQuery();
 
-    return call_user_func_array(array($query, $method), $parameters);
+    return call_user_func_array([$query, $method], $parameters);
   }
 
   public static function query() {
