@@ -227,7 +227,9 @@ abstract class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializa
   protected static function registerBaseHooks($class) {
 
     add_action('after_switch_theme', [__CLASS__, 'doRefreshRewrites'], PHP_INT_MAX, 0);
+    add_action('delete_option_rewrite_rules', [__CLASS__, 'doRefreshRewrites'], PHP_INT_MAX, 0);
     add_action('init', [__CLASS__, 'doRefreshRewriteTags'], 10, 0);
+    add_action('init', [__CLASS__, 'doRefreshRewriteRules'], 10, 0);
     add_action('switch_theme', 'flush_rewrite_rules', PHP_INT_MAX, 0);
   }
 
