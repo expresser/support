@@ -40,10 +40,16 @@ abstract class Fluent implements ArrayAccess, Arrayable, Jsonable, JsonSerializa
 
       $method = camel_case($key);
 
-      if (method_exists($this, $method)) $value = $this->$method();
+      if (method_exists($this, $method)) {
+
+        $value = $this->$method();
+      }
     }
 
-    if ($this->hasGetMutator($key)) return $this->{'get' . studly_case($key) . 'Attribute'}($value);
+    if ($this->hasGetMutator($key)) {
+
+      return $this->{'get' . studly_case($key) . 'Attribute'}($value);
+    }
 
     return $value;
   }
