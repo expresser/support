@@ -28,7 +28,7 @@ abstract class Builder {
 		return $this;
 	}
 
-  public function __call($method, array $parameters) {
+  public function __call($method, $parameters) {
 
     if (strpos($method, 'where') === 0) {
 
