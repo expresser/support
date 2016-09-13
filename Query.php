@@ -4,9 +4,18 @@ abstract class Query extends Builder {
 
   protected $query;
 
+  protected $params = [];
+
   public function __construct($query) {
 
     $this->query = $query;
+  }
+
+  public function get() {
+
+    $models = $this->query->query($this->params);
+
+    return $this->getModels($models);
   }
 
   public function getParameter($name) {
@@ -16,14 +25,15 @@ abstract class Query extends Builder {
 
   public function getParameterValue($name) {
 
-    $value = $this->query->get($name);
+    if (isset($this->params[$name])) {
 
-    if (!empty($value)) return $value;
+      return $this->params[$name];
+    }
   }
 
   public function setParameter($name, $value) {
 
-    $this->query->set($name, $value);
+    $this->params[$name] = $value;
   }
 
   public function __get($name) {
