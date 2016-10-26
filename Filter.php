@@ -1,14 +1,16 @@
-<?php namespace Expresser\Support;
+<?php
 
-class Filter {
+namespace Expresser\Support;
 
-  public static function isEmail($value) {
+class Filter
+{
+    public static function isEmail($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_EMAIL);
+    }
 
-    return filter_var($value, FILTER_VALIDATE_EMAIL);
-  }
-
-  public static function isUrl($value) {
-
-    return filter_var($value, FILTER_VALIDATE_URL);
-  }
+    public static function isUrl($value)
+    {
+        return filter_var($value, FILTER_VALIDATE_URL);
+    }
 }
