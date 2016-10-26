@@ -1,9 +1,11 @@
-<?php namespace Expresser\Support\Facades;
+<?php
 
-class App extends \Themosis\Facades\Facade {
+namespace Expresser\Support\Facades;
 
-  protected static function getFacadeAccessor() {
-
-    return 'app';
-  }
+class App extends \Themosis\Facades\Facade
+{
+    protected static function getFacadeAccessor()
+    {
+        return 'app';
+    }
 }
