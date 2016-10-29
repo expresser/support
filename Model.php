@@ -49,13 +49,6 @@ abstract class Model extends Fluent
         return $this;
     }
 
-    public function __call($method, $parameters)
-    {
-        $query = $this->newQuery();
-
-        return call_user_func_array([$query, $method], $parameters);
-    }
-
     public static function query()
     {
         return (new static())->newQuery();
