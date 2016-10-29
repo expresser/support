@@ -1,53 +1,54 @@
-<?php namespace Expresser\Support;
+<?php
 
-abstract class Query extends Builder {
+namespace Expresser\Support;
 
-  protected $query;
+abstract class Query extends Builder
+{
+    protected $query;
 
-  protected $params = [];
+    protected $params = [];
 
-  public function __construct($query) {
-
-    $this->query = $query;
-  }
-
-  public function get() {
-
-    $models = $this->query->query($this->params);
-
-    return $this->getModels($models);
-  }
-
-  public function getParameter($name) {
-
-    return $this->getParameterValue($name);
-  }
-
-  public function getParameterValue($name) {
-
-    if (isset($this->params[$name])) {
-
-      return $this->params[$name];
+    public function __construct($query)
+    {
+        $this->query = $query;
     }
-  }
 
-  public function setParameter($name, $value) {
+    public function get()
+    {
+        $models = $this->query->query($this->params);
 
-    $this->params[$name] = $value;
-  }
+        return $this->getModels($models);
+    }
 
-  public function __get($name) {
+    public function getParameter($name)
+    {
+        return $this->getParameterValue($name);
+    }
 
-    return $this->getParameter($name);
-  }
+    public function getParameterValue($name)
+    {
+        if (isset($this->params[$name])) {
+            return $this->params[$name];
+        }
+    }
 
-  public function __set($name, $value) {
+    public function setParameter($name, $value)
+    {
+        $this->params[$name] = $value;
+    }
 
-    $this->setParameter($name, $value);
-  }
+    public function __get($name)
+    {
+        return $this->getParameter($name);
+    }
 
-  public function __isset($name) {
+    public function __set($name, $value)
+    {
+        $this->setParameter($name, $value);
+    }
 
-    return is_null($this->getParameter($name)) === false;
-  }
+    public function __isset($name)
+    {
+        return is_null($this->getParameter($name)) === false;
+    }
 }
