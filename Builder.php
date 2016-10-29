@@ -1,32 +1,33 @@
-<?php namespace Expresser\Support;
+<?php
+
+namespace Expresser\Support;
 
 use Illuminate\Support\Collection;
 
-abstract class Builder {
+abstract class Builder
+{
+    protected $model;
 
-  protected $model;
+    public function getModels(array $models = [])
+    {
+        foreach ($models as &$model) {
+            $model = $this->model->newFromQuery($model);
+        }
 
-  public function getModels(array $models = []) {
-
-    foreach ($models as &$model) {
-
-      $model = $this->model->newFromQuery($model);
+        return Collection::make($models);
     }
 
-    return Collection::make($models);
-  }
+    public function getModel()
+    {
+        return $this->model;
+    }
 
-  public function getModel() {
+    public function setModel(Model $model)
+    {
+        $this->model = $model;
 
-		return $this->model;
-	}
+        return $this;
+    }
 
-  public function setModel(Model $model) {
-
-		$this->model = $model;
-
-		return $this;
-	}
-
-  public abstract function get();
+    abstract public function get();
 }
