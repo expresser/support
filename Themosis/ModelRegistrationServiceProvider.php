@@ -1,11 +1,12 @@
 <?php
 
-namespace Expresser\Support;
+namespace Expresser\Support\Themosis;
 
+use Themosis\Core\IgniterService;
 use Themosis\Facades\Config;
 
-class ModelRegistrationServiceProvider extends \Themosis\Core\IgniterService {
-
+class ModelRegistrationServiceProvider extends IgniterService
+{
     public function ignite()
     {
         $models = Config::get('registration');
