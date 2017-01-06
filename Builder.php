@@ -2,19 +2,31 @@
 
 namespace Expresser\Support;
 
-use Illuminate\Support\Collection;
+use Expresser\Contracts\Support\Queryable;
 
 abstract class Builder
 {
+    protected $query;
+
     protected $model;
 
-    public function getModels(array $models = [])
+    public function __construct(Queryable $query)
     {
-        foreach ($models as &$model) {
-            $model = $this->model->newFromQuery($model);
-        }
+        $this->query = $query;
+    }
 
-        return Collection::make($models);
+    public function get()
+    {
+        $models = $this->getModels();
+
+        return $this->model->newCollection($models);
+    }
+
+    public function getModels()
+    {
+        $results = $this->query->execute();
+
+        return $this->model->hydrate($results)->all();
     }
 
     public function getModel()
@@ -29,5 +41,10 @@ abstract class Builder
         return $this;
     }
 
-    abstract public function get();
+    public function __call($method, $parameters)
+    {
+        call_user_func_array([$this->query, $method], $parameters);
+
+        return $this;
+    }
 }

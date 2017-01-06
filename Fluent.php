@@ -2,9 +2,26 @@
 
 namespace Expresser\Support;
 
-abstract class Fluent extends \Illuminate\Support\Fluent
+use Illuminate\Support\Collection;
+use Illuminate\Support\Fluent as BaseFluent;
+
+abstract class Fluent extends BaseFluent
 {
     protected $fieldPrefix = '';
+
+    public function __construct(array $attributes = [])
+	{
+		$this->fill($attributes);
+	}
+
+    public function fill(array $attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            $this->setAttribute($key, $value);
+        }
+
+        return $this;
+    }
 
     public function getFieldPrefix()
     {
@@ -76,6 +93,11 @@ abstract class Fluent extends \Illuminate\Support\Fluent
             $this->attributes[$key] = $value;
         }
     }
+
+    public function newCollection($items = [])
+	{
+		return new Collection($items);
+	}
 
     public function toArray()
     {

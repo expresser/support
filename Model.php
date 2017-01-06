@@ -15,22 +15,27 @@ abstract class Model extends Fluent
         $this->syncOriginal();
     }
 
-    public function getDirty()
+    public function syncOriginal()
     {
-        $dirty = [];
+        $this->original = $this->attributes;
 
-        foreach ($this->attributes as $key => $value) {
-            if (!array_key_exists($key, $this->original) || $value !== $this->original[$key]) {
-                $dirty[$key] = $value;
-            }
-        }
-
-        return $dirty;
+        return $this;
     }
 
-    public function newFromQuery($attributes = [])
+    public static function hydrate(array $items)
+	{
+		$instance = (new static);
+
+		return $instance->newCollection(array_map(function ($item) use ($instance) {
+			return $instance->newFromBuilder($item);
+		}, $items));
+	}
+
+    public function newFromBuilder($attributes = [])
     {
-        return $this->newInstance($attributes, true);
+        $model = $this->newInstance($attributes, true);
+
+        return $model;
     }
 
     public function newInstance($attributes = [], $exists = false)
@@ -42,11 +47,17 @@ abstract class Model extends Fluent
         return $model;
     }
 
-    public function syncOriginal()
+    public function getDirty()
     {
-        $this->original = $this->attributes;
+        $dirty = [];
 
-        return $this;
+        foreach ($this->attributes as $key => $value) {
+            if (!array_key_exists($key, $this->original) || $value !== $this->original[$key]) {
+                $dirty[$key] = $value;
+            }
+        }
+
+        return $dirty;
     }
 
     public static function query()

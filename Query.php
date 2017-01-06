@@ -2,7 +2,9 @@
 
 namespace Expresser\Support;
 
-abstract class Query extends Builder
+use Expresser\Contracts\Support\Queryable;
+
+abstract class Query implements Queryable
 {
     protected $query;
 
@@ -13,11 +15,11 @@ abstract class Query extends Builder
         $this->query = $query;
     }
 
-    public function get()
+    public function execute()
     {
-        $models = $this->query->query($this->params);
+        $results = $this->query->query($this->params);
 
-        return $this->getModels($models);
+        return $results;
     }
 
     public function getParameter($name)
