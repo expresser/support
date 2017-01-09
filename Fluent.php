@@ -9,10 +9,21 @@ abstract class Fluent extends BaseFluent
 {
     protected $fieldPrefix = '';
 
+    private $cacheableAccessors = [];
+
+    private $accessorsCache = [];
+
     public function __construct(array $attributes = [])
 	{
+        $this->cacheableAccessors = $this->getCacheableAccessors();
+
 		$this->fill($attributes);
 	}
+
+    public function getCacheableAccessors()
+    {
+        return [];
+    }
 
     public function fill(array $attributes)
     {
@@ -21,21 +32,6 @@ abstract class Fluent extends BaseFluent
         }
 
         return $this;
-    }
-
-    public function getFieldPrefix()
-    {
-        return $this->fieldPrefix;
-    }
-
-    public function transformKey($key)
-    {
-        return $key;
-    }
-
-    public function hasGetMutator($key)
-    {
-        return method_exists($this, 'get'.studly_case($key).'Attribute');
     }
 
     public function get($key, $default = null)
@@ -47,23 +43,22 @@ abstract class Fluent extends BaseFluent
 
     public function getAttribute($key)
     {
-        return $this->getAttributeValue($this->transformKey($key));
+        $key = $this->transformKey($key);
+
+        return $this->getAttributeValue($key);
+    }
+
+    public function transformKey($key)
+    {
+        return $key;
     }
 
     public function getAttributeValue($key)
     {
         $value = $this->getAttributeFromArray($key);
 
-        if (is_null($value)) {
-            $method = camel_case($key);
-
-            if (method_exists($this, $method)) {
-                $value = $this->$method();
-            }
-        }
-
         if ($this->hasGetMutator($key)) {
-            return $this->{'get'.studly_case($key).'Attribute'}($value);
+            $value = $this->mutateAttribute($key, $value);
         }
 
         return $value;
@@ -78,10 +73,31 @@ abstract class Fluent extends BaseFluent
         }
     }
 
-    public function hasSetMutator($key)
+    public function getFieldPrefix()
     {
-        return method_exists($this, 'set'.studly_case($key).'Attribute');
+        return $this->fieldPrefix;
     }
+
+    public function hasGetMutator($key)
+    {
+        return method_exists($this, 'get'.studly_case($key).'Attribute');
+    }
+
+    public function mutateAttribute($key, $value)
+	{
+        if (isset($this->accessorsCache[$key])) {
+            return $this->accessorsCache[$key];
+        }
+        else {
+            $value = $this->{'get'.studly_case($key).'Attribute'}($value);
+
+            if (in_array($key, $this->cacheableAccessors)) {
+                $this->accessorsCache[$key] = $value;
+            }
+        }
+
+		return $value;
+	}
 
     public function setAttribute($key, $value)
     {
@@ -92,6 +108,11 @@ abstract class Fluent extends BaseFluent
         } else {
             $this->attributes[$key] = $value;
         }
+    }
+
+    public function hasSetMutator($key)
+    {
+        return method_exists($this, 'set'.studly_case($key).'Attribute');
     }
 
     public function newCollection($items = [])
