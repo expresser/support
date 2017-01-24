@@ -2,55 +2,64 @@
 
 namespace Expresser\Support;
 
+use InvalidArgumentException;
 use Expresser\Contracts\Support\Queryable;
 
 abstract class Query implements Queryable
 {
     protected $query;
 
-    protected $params = [];
-
     public function __construct($query)
     {
-        $this->query = $query;
+        $this->setQuery($query);
     }
 
-    public function execute()
+    public function getQuery()
     {
-        $results = $this->query->query($this->params);
-
-        return $results;
+        return $this->query;
     }
 
-    public function getParameter($name)
+    public function setQuery($query)
     {
-        return $this->getParameterValue($name);
-    }
-
-    public function getParameterValue($name)
-    {
-        if (isset($this->params[$name])) {
-            return $this->params[$name];
+        if (!property_exists($query, 'query_vars')) {
+            throw new InvalidArgumentException('$query not a valid type of WordPress Query');
         }
+
+        $this->query = $query;
+
+        if (!is_array($this->query->query_vars)) {
+            $this->query->query_vars = [];
+        }
+
+        $this->initQueryVars();
+
+        return $this;
     }
 
-    public function setParameter($name, $value)
+    public function getQueryVar($name)
     {
-        $this->params[$name] = $value;
+      if (isset($this->query->query_vars[$name])) {
+          return $this->query->query_vars[$name];
+      }
     }
 
-    public function __get($name)
+    public function setQueryVar($name, $value)
     {
-        return $this->getParameter($name);
+        $this->query->query_vars[$name] = $value;
+
+        return $this;
     }
 
-    public function __set($name, $value)
+    public function hasQueryVar($name)
     {
-        $this->setParameter($name, $value);
+        $queryVar = $this->getQueryVar($name);
+
+        return !(is_null($queryVar) && empty($queryVar));
     }
 
-    public function __isset($name)
+    protected function initQueryVars()
     {
-        return is_null($this->getParameter($name)) === false;
     }
+
+    abstract public function execute();
 }

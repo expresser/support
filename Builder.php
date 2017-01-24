@@ -12,7 +12,7 @@ abstract class Builder
 
     public function __construct(Queryable $query)
     {
-        $this->query = $query;
+        $this->setQuery($query);
     }
 
     public function get()
@@ -27,6 +27,18 @@ abstract class Builder
         $results = $this->query->execute();
 
         return $this->model->hydrate($results)->all();
+    }
+
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
+    public function setQuery(Queryable $query)
+    {
+        $this->query = $query;
+
+        return $this;
     }
 
     public function getModel()
