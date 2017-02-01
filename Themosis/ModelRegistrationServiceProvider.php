@@ -2,23 +2,24 @@
 
 namespace Expresser\Support\Themosis;
 
-use Themosis\Core\IgniterService;
 use Themosis\Facades\Config;
+use Themosis\Foundation\ServiceProvider;
 
-class ModelRegistrationServiceProvider extends IgniterService
+class ModelRegistrationServiceProvider extends ServiceProvider
 {
-    public function ignite()
+    public function register()
     {
-        $models = Config::get('registration');
+        $models = Config::get('models');
 
-        $this->register($models['options']);
-        $this->register($models['roles']);
-        $this->register($models['users']);
-        $this->register($models['taxonomies']);
-        $this->register($models['posttypes']);
+        $this->registerModels($models['options']);
+        $this->registerModels($models['roles']);
+        $this->registerModels($models['users']);
+        $this->registerModels($models['taxonomies']);
+        $this->registerModels($models['posttypes']);
+        $this->registerModels($models['other']);
     }
 
-    private function register($models)
+    private function registerModels($models)
     {
         foreach ($models as $model) {
             $this->registerModel($model);
