@@ -1,6 +1,6 @@
 <?php
 
-namespace Expresser\Support\Themosis;
+namespace Expresser\Support;
 
 use Themosis\Facades\Config;
 use Themosis\Foundation\ServiceProvider;
