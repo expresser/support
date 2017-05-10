@@ -8,8 +8,10 @@ abstract class Model extends Fluent
 
     protected $original = [];
 
-    public function __construct(array $attributes = [])
+    public function __construct($attributes = [])
     {
+        $attributes = static::prepareAttributes($attributes);
+
         parent::__construct($attributes);
 
         $this->syncOriginal();
@@ -63,6 +65,15 @@ abstract class Model extends Fluent
     public static function query()
     {
         return (new static())->newQuery();
+    }
+
+    protected static function prepareAttributes($value)
+    {
+        if (!is_array($value)) {
+            $value = json_decode(json_encode($value), true);
+        }
+
+        return $value;
     }
 
     abstract public function newQuery();
